@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+
+<html lang="pt"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SIGA - Visão Geral</title>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-variant": "#e1e3e4",
+                    "on-tertiary-fixed-variant": "#404758",
+                    "on-surface": "#191c1d",
+                    "inverse-on-surface": "#f0f1f2",
+                    "tertiary-fixed": "#dce2f7",
+                    "secondary": "#486554",
+                    "outline": "#6f7a6e",
+                    "outline-variant": "#becabc",
+                    "inverse-primary": "#79db8d",
+                    "on-primary-container": "#d3ffd5",
+                    "background": "#f8f9fa",
+                    "surface-container-highest": "#e1e3e4",
+                    "on-error": "#ffffff",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed-dim": "#79db8d",
+                    "on-tertiary-fixed": "#141b2b",
+                    "tertiary": "#505768",
+                    "on-error-container": "#93000a",
+                    "secondary-fixed": "#caead6",
+                    "secondary-fixed-dim": "#afceba",
+                    "tertiary-container": "#686f81",
+                    "surface": "#f8f9fa",
+                    "surface-tint": "#006d30",
+                    "error": "#ba1a1a",
+                    "on-surface-variant": "#3f493f",
+                    "primary": "#00652c",
+                    "on-secondary-container": "#4e6b5a",
+                    "surface-container-low": "#f3f4f5",
+                    "on-secondary-fixed-variant": "#314d3e",
+                    "on-background": "#191c1d",
+                    "surface-container": "#edeeef",
+                    "surface-bright": "#f8f9fa",
+                    "error-container": "#ffdad6",
+                    "on-secondary": "#ffffff",
+                    "on-tertiary-container": "#f1f3ff",
+                    "primary-container": "#15803d",
+                    "surface-dim": "#d9dadb",
+                    "on-primary-fixed-variant": "#005323",
+                    "inverse-surface": "#2e3132",
+                    "primary-fixed": "#95f8a7",
+                    "on-primary-fixed": "#00210a",
+                    "tertiary-fixed-dim": "#c0c6db",
+                    "on-secondary-fixed": "#042014",
+                    "on-primary": "#ffffff",
+                    "surface-container-high": "#e7e8e9",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-container": "#caead6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "1rem",
+                    "lg": "2rem",
+                    "margin-desktop": "2.5rem",
+                    "md": "1.5rem",
+                    "base": "4px",
+                    "xs": "0.5rem",
+                    "xl": "3rem",
+                    "sm": "1rem",
+                    "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                    "body-sm": ["Inter", "sans-serif"],
+                    "label-sm": ["Inter", "sans-serif"],
+                    "body-md": ["Inter", "sans-serif"],
+                    "body-lg": ["Inter", "sans-serif"],
+                    "headline-xl": ["Inter", "sans-serif"],
+                    "headline-lg": ["Inter", "sans-serif"],
+                    "headline-md": ["Inter", "sans-serif"],
+                    "label-md": ["Inter", "sans-serif"]
+            },
+            "fontSize": {
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "headline-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "headline-lg": ["28px", {"lineHeight": "36px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex antialiased">
+<!-- SideNavBar (Permanent) -->
+<aside class="fixed left-0 top-0 h-full w-[280px] bg-primary border-r border-outline-variant shadow-sm flex flex-col gap-sm p-sm z-50 hidden md:flex transition-all duration-300">
+<!-- Header -->
+<div class="flex items-center gap-xs px-xs py-sm mb-sm border-b border-outline-variant/30">
+<div class="w-10 h-10 rounded-DEFAULT bg-surface-container-lowest flex items-center justify-center overflow-hidden shrink-0">
+<img alt="ISPNE Logo" class="w-full h-full object-cover" data-alt="A clean, modern institutional logo for ISPNE Uíge. Minimalist academic crest with a stylized star and open book motif, rendered in crisp solid colors over a pure white background. Professional vector graphic style, flat design, sharp edges." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCufoZLB_e6wKvUTXezqao_fclSpDUxKMh_GTH4JLpZGgkm3r0hbJEK8s2cwYPoFTV-ORECxwiNNKwFjL1YBYXrP_jDjUrx1ipl93CKbfyYz9W8u2sBxTVEl8wi9TbzqtTAzetsEiDgg96nJNBgIit79WGen3cWx6j__WxUBGRwLBU3joj0papqSjjeSAazgOp3ZN1i0HOy20Csy6INhLXd1ayoYSB15zrvOBMV92V0Qp7h69OdalfKMKT6h6QyYcBGs7duoZLbnKY"/>
+</div>
+<div class="flex flex-col overflow-hidden">
+<span class="font-headline-md text-headline-md font-bold text-on-primary truncate">ISPNE - Uíge</span>
+<span class="font-body-sm text-body-sm text-on-primary/80 truncate">Academic System</span>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<nav class="flex-1 flex flex-col gap-base">
+<!-- Active: Dashboard -->
+<a class="bg-secondary-container text-on-secondary-container border-l-4 border-white font-label-md text-label-md px-xs py-xs rounded-r-DEFAULT flex items-center gap-xs transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                Dashboard
+            </a>
+<!-- Inactive: Students -->
+<a class="text-on-primary/80 hover:bg-primary-container hover:text-on-primary-container font-label-md text-label-md px-xs py-xs border-l-4 border-transparent flex items-center gap-xs transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-on-primary-container">school</span>
+                Students
+            </a>
+<!-- Inactive: Teachers -->
+<a class="text-on-primary/80 hover:bg-primary-container hover:text-on-primary-container font-label-md text-label-md px-xs py-xs border-l-4 border-transparent flex items-center gap-xs transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-on-primary-container">person</span>
+                Teachers
+            </a>
+<!-- Inactive: Courses -->
+<a class="text-on-primary/80 hover:bg-primary-container hover:text-on-primary-container font-label-md text-label-md px-xs py-xs border-l-4 border-transparent flex items-center gap-xs transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-on-primary-container">menu_book</span>
+                Courses
+            </a>
+<!-- Inactive: Grades -->
+<a class="text-on-primary/80 hover:bg-primary-container hover:text-on-primary-container font-label-md text-label-md px-xs py-xs border-l-4 border-transparent flex items-center gap-xs transition-colors duration-200 group active:scale-[0.98]" href="#">
+<span class="material-symbols-outlined group-hover:text-on-primary-container">grade</span>
+                Grades
+            </a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 md:ml-[280px]">
+<!-- TopNavBar -->
+<header class="sticky top-0 right-0 z-40 w-full bg-surface border-b border-outline-variant shadow-sm flex items-center justify-between px-lg py-xs transition-all duration-300">
+<!-- Left Side: Mobile Menu Toggle & Brand (Mobile only) -->
+<div class="flex items-center gap-sm">
+<button class="md:hidden text-primary p-2 hover:bg-surface-container-high rounded-full transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+<h1 class="hidden md:block font-headline-md text-headline-md text-primary font-bold">ISPNE - Uíge</h1>
+</div>
+<!-- Search Bar (on_left configuration) -->
+<div class="flex-1 max-w-md mx-sm hidden sm:block relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" placeholder="Search..." type="text"/>
+</div>
+<!-- Right Side: Actions & Profile -->
+<div class="flex items-center gap-sm">
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined">settings</span>
+</button>
+<div class="w-9 h-9 rounded-full overflow-hidden border border-outline-variant ml-xs cursor-pointer hover:ring-2 ring-primary/30 transition-all">
+<img alt="Administrator Profile" class="w-full h-full object-cover" data-alt="A professional headshot of a middle-aged academic administrator in a modern office setting. The individual is wearing a crisp white shirt and a subtle dark blazer, looking confident and approachable. Soft, natural daylight illuminates the face, creating a clean, high-key portrait suitable for a corporate profile avatar." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAOa9y2hrFeqnEb6n33Guv_stpkWVvnYzKKdO6c4GlGaRn7S2MbkDabXBNJyiBV0jppBcuU2e5aj9wAx23ugltEN--sQeYecF_IRLRLKXCxOsTp4H5TkGEA050vGUndQ3dLLjZvAa7POAuAyV5BnRGbgt3j9MqlYestqQfCZwaCRWqa-OA2rxplYpGPmPjCtP3flTCYFuWn5C4txFDjAPC30BkBH5BPxDohMO-VHeBAK5UxDzbkwXFmCifCBMTCsKAuXEL7oOH9UYg"/>
+</div>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 overflow-auto p-margin-mobile md:p-margin-desktop">
+<div class="max-w-7xl mx-auto flex flex-col gap-gutter">
+<!-- Page Title -->
+<div>
+<h2 class="font-headline-xl text-headline-xl text-on-surface">Visão Geral</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Bem-vindo ao painel de administração do SIGA.</p>
+</div>
+<!-- Metric Cards Grid -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex items-center justify-between z-10">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Total de Estudantes</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-DEFAULT">groups</span>
+</div>
+<div class="flex items-end gap-2 z-10 mt-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface font-bold">4,289</span>
+<span class="font-label-sm text-label-sm text-primary mb-1 flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12%</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex items-center justify-between z-10">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Docentes Ativos</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-DEFAULT">school</span>
+</div>
+<div class="flex items-end gap-2 z-10 mt-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface font-bold">342</span>
+<span class="font-label-sm text-label-sm text-primary mb-1 flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 2%</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex items-center justify-between z-10">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Cursos Disponíveis</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-DEFAULT">menu_book</span>
+</div>
+<div class="flex items-end gap-2 z-10 mt-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface font-bold">28</span>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant p-md flex flex-col gap-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="absolute -right-4 -top-4 w-24 h-24 bg-primary/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
+<div class="flex items-center justify-between z-10">
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Matrículas Hoje</span>
+<span class="material-symbols-outlined text-primary bg-primary/10 p-2 rounded-DEFAULT">app_registration</span>
+</div>
+<div class="flex items-end gap-2 z-10 mt-xs">
+<span class="font-headline-xl text-headline-xl text-on-surface font-bold">156</span>
+<span class="font-label-sm text-label-sm text-primary mb-1 flex items-center"><span class="material-symbols-outlined text-[14px]">arrow_upward</span> 45%</span>
+</div>
+</div>
+</div>
+<!-- Recent Enrollments Table -->
+<div class="bg-surface-container-lowest rounded-lg shadow-sm border border-outline-variant overflow-hidden flex flex-col mt-sm">
+<div class="px-md py-sm border-b border-outline-variant flex items-center justify-between bg-surface-bright">
+<h3 class="font-headline-md text-headline-md text-on-surface">Últimas Matrículas</h3>
+<button class="font-label-md text-label-md text-primary hover:text-primary-fixed-dim transition-colors">Ver todas</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface border-b border-outline-variant">
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant font-semibold">Nome do Estudante</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant font-semibold">Curso</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant font-semibold">Data</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant font-semibold">Status</th>
+<th class="px-md py-sm font-label-md text-label-md text-on-surface-variant font-semibold text-right">Ação</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm font-body-md text-body-md text-on-surface font-medium flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-sm">AC</div>
+                                        Ana Costa Silva
+                                    </td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">Engenharia Informática</td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">12 Out 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed">
+                                            Confirmado
+                                        </span>
+</td>
+<td class="px-md py-sm text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 rounded-DEFAULT transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm font-body-md text-body-md text-on-surface font-medium flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed text-on-tertiary-fixed flex items-center justify-center font-label-sm">JM</div>
+                                        João Manuel Pinto
+                                    </td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">Direito</td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">12 Out 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed">
+                                            Confirmado
+                                        </span>
+</td>
+<td class="px-md py-sm text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 rounded-DEFAULT transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm font-body-md text-body-md text-on-surface font-medium flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-variant text-on-surface-variant flex items-center justify-center font-label-sm">MF</div>
+                                        Maria Fernandes
+                                    </td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">Gestão de Empresas</td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">11 Out 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-error-container text-on-error-container">
+                                            Pendente
+                                        </span>
+</td>
+<td class="px-md py-sm text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 rounded-DEFAULT transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="px-md py-sm font-body-md text-body-md text-on-surface font-medium flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container text-on-secondary-container flex items-center justify-center font-label-sm">PT</div>
+                                        Pedro Tomás
+                                    </td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">Enfermagem</td>
+<td class="px-md py-sm font-body-md text-body-md text-on-surface-variant">11 Out 2023</td>
+<td class="px-md py-sm">
+<span class="inline-flex items-center px-2.5 py-0.5 rounded-full font-label-sm text-label-sm bg-secondary-fixed text-on-secondary-fixed">
+                                            Confirmado
+                                        </span>
+</td>
+<td class="px-md py-sm text-right">
+<button class="text-on-surface-variant hover:text-primary p-1 rounded-DEFAULT transition-colors opacity-0 group-hover:opacity-100">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
