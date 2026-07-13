@@ -21,6 +21,7 @@ export default function MatriculasPage() {
   const [estudantes, setEstudantes] = useState<Estudante[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form State
   const [estudanteId, setEstudanteId] = useState('');
@@ -52,26 +53,53 @@ export default function MatriculasPage() {
     }
     
     setLoading(true);
-    const { error } = await supabase.from('matriculas').insert([
-      { 
-        estudante_id: estudanteId, 
-        curso_id: cursoId, 
-        ano_letivo: anoLetivo,
-        estado: estado
-      }
-    ]);
+    let error;
+    if (editingId) {
+      const { error: updateError } = await supabase.from('matriculas').update({
+        estudante_id: estudanteId, curso_id: cursoId, ano_letivo: anoLetivo, estado
+      }).eq('id', editingId);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase.from('matriculas').insert([
+        { estudante_id: estudanteId, curso_id: cursoId, ano_letivo: anoLetivo, estado }
+      ]);
+      error = insertError;
+    }
     
     if (!error) {
-      alert('Matrícula efetuada com sucesso!');
+      alert(`Matrícula ${editingId ? 'atualizada' : 'efetuada'} com sucesso!`);
       setEstudanteId(''); setCursoId(''); setAnoLetivo(''); setEstado('Pendente');
+      setEditingId(null);
       const { data } = await supabase.from('matriculas').select('*, estudantes(nome, bi), cursos(nome)').order('data_matricula', { ascending: false });
       if (data) setMatriculas(data as Matricula[]);
       setLoading(false);
     } else {
       console.error(error);
-      alert('Erro ao efetuar matrícula: ' + error.message);
+      alert('Erro ao guardar matrícula: ' + error.message);
       setLoading(false);
     }
+  };
+
+  const handleEdit = (mat: Matricula) => {
+    setEditingId(mat.id);
+    setEstudanteId(mat.estudante_id || '');
+    setCursoId(mat.curso_id || '');
+    setAnoLetivo(mat.ano_letivo);
+    setEstado(mat.estado);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Tem a certeza que deseja excluir esta matrícula?')) return;
+    setLoading(true);
+    const { error } = await supabase.from('matriculas').delete().eq('id', id);
+    if (!error) {
+      const { data } = await supabase.from('matriculas').select('*, estudantes(nome, bi), cursos(nome)').order('data_matricula', { ascending: false });
+      if (data) setMatriculas(data as Matricula[]);
+    } else {
+      alert('Erro ao excluir: ' + error.message);
+    }
+    setLoading(false);
   };
 
   const getStatusStyle = (estadoStatus: string) => {
@@ -106,7 +134,7 @@ export default function MatriculasPage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <h3 className="font-headline text-[20px] font-semibold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary">app_registration</span>
-          Efetuar Matrícula
+          {editingId ? 'Editar Matrícula' : 'Efetuar Matrícula'}
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 relative z-10 items-end">
           <div className="space-y-1.5">
@@ -136,9 +164,14 @@ export default function MatriculasPage() {
             </select>
           </div>
         </div>
-        <div className="flex justify-end relative z-10 mt-2">
+        <div className="flex justify-end relative z-10 mt-2 gap-2">
+          {editingId && (
+            <button type="button" onClick={() => { setEditingId(null); setEstudanteId(''); setCursoId(''); setAnoLetivo(''); setEstado('Pendente'); }} className="bg-surface-container-lowest text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container hover:text-on-surface px-8 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm h-[46px]">
+              Cancelar
+            </button>
+          )}
           <button type="submit" disabled={loading} className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-8 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md disabled:opacity-50 h-[46px]">
-            {loading ? 'A processar...' : 'Inscrever Estudante'}
+            {loading ? 'A processar...' : (editingId ? 'Atualizar Matrícula' : 'Inscrever Estudante')}
           </button>
         </div>
       </form>
@@ -184,8 +217,15 @@ export default function MatriculasPage() {
                       {mat.estado}
                     </span>
                   </td>
-                  <td className="py-4 px-6 text-right text-sm text-on-surface-variant">
-                    {new Date(mat.data_matricula).toLocaleDateString('pt-PT', { day: '2-digit', month: 'short', year: 'numeric' })}
+                  <td className="py-4 px-6 text-right">
+                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
+                      <button onClick={(e) => { e.stopPropagation(); handleEdit(mat); }} className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
+                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); handleDelete(mat.id); }} className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

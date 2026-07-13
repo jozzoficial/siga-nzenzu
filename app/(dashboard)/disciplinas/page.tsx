@@ -7,6 +7,8 @@ interface Docente { id: string; nome: string; }
 interface Disciplina {
   id: string;
   nome: string;
+  curso_id: string;
+  docente_id: string;
   cursos?: { nome: string };
   docentes?: { nome: string };
 }
@@ -17,6 +19,7 @@ export default function DisciplinasPage() {
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [docentes, setDocentes] = useState<Docente[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form State
   const [nome, setNome] = useState('');
@@ -47,17 +50,23 @@ export default function DisciplinasPage() {
     }
     
     setLoading(true);
-    const { error } = await supabase.from('disciplinas').insert([
-      { 
-        nome, 
-        curso_id: cursoId, 
-        docente_id: docenteId
-      }
-    ]);
+    let error;
+    if (editingId) {
+      const { error: updateError } = await supabase.from('disciplinas').update({
+        nome, curso_id: cursoId, docente_id: docenteId
+      }).eq('id', editingId);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase.from('disciplinas').insert([
+        { nome, curso_id: cursoId, docente_id: docenteId }
+      ]);
+      error = insertError;
+    }
     
     if (!error) {
-      alert('Disciplina adicionada com sucesso!');
+      alert(`Disciplina ${editingId ? 'atualizada' : 'adicionada'} com sucesso!`);
       setNome(''); setCursoId(''); setDocenteId('');
+      setEditingId(null);
       const [resDisciplinas, resCursos, resDocentes] = await Promise.all([
         supabase.from('disciplinas').select('*, cursos(nome), docentes(nome)').order('nome', { ascending: true }),
         supabase.from('cursos').select('id, nome').order('nome', { ascending: true }),
@@ -69,8 +78,30 @@ export default function DisciplinasPage() {
       setLoading(false);
     } else {
       console.error(error);
-      alert('Erro ao adicionar disciplina: ' + error.message);
+      alert('Erro ao guardar disciplina: ' + error.message);
+      setLoading(false);
     }
+  };
+
+  const handleEdit = (disciplina: Disciplina) => {
+    setEditingId(disciplina.id);
+    setNome(disciplina.nome);
+    setCursoId(disciplina.curso_id || '');
+    setDocenteId(disciplina.docente_id || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Tem a certeza que deseja excluir esta disciplina?')) return;
+    setLoading(true);
+    const { error } = await supabase.from('disciplinas').delete().eq('id', id);
+    if (!error) {
+      const { data } = await supabase.from('disciplinas').select('*, cursos(nome), docentes(nome)').order('nome', { ascending: true });
+      if (data) setDisciplinas(data as Disciplina[]);
+    } else {
+      alert('Erro ao excluir: ' + error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -96,7 +127,7 @@ export default function DisciplinasPage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <h3 className="font-headline text-[20px] font-semibold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary">auto_stories</span>
-          Criar e Alocar
+          {editingId ? 'Editar Disciplina' : 'Criar e Alocar'}
         </h3>
         <div className="flex gap-4 flex-wrap items-end relative z-10">
           <div className="flex-1 min-w-[200px] space-y-1.5">
@@ -117,7 +148,14 @@ export default function DisciplinasPage() {
               {docentes.map(d => <option key={d.id} value={d.id}>{d.nome}</option>)}
             </select>
           </div>
-          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">Gravar</button>
+          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">
+            {editingId ? 'Atualizar' : 'Gravar'}
+          </button>
+          {editingId && (
+            <button type="button" onClick={() => { setEditingId(null); setNome(''); setCursoId(''); setDocenteId(''); }} className="bg-surface-container-lowest text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container hover:text-on-surface px-4 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm h-[46px]">
+              Cancelar
+            </button>
+          )}
         </div>
       </form>
 
@@ -158,10 +196,10 @@ export default function DisciplinasPage() {
                   </td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                      <button className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
+                      <button onClick={(e) => { e.stopPropagation(); handleEdit(disciplina); }} className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
                         <span className="material-symbols-outlined text-[20px]">edit</span>
                       </button>
-                      <button className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
+                      <button onClick={(e) => { e.stopPropagation(); handleDelete(disciplina.id); }} className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
                         <span className="material-symbols-outlined text-[20px]">delete</span>
                       </button>
                     </div>

@@ -13,6 +13,8 @@ interface Estudante {
   bi: string;
   email: string;
   telefone?: string;
+  data_nascimento: string;
+  curso_id: string;
   ano_ingresso: number;
   cursos?: { nome: string };
 }
@@ -22,6 +24,7 @@ export default function EstudantesPage() {
   const [estudantes, setEstudantes] = useState<Estudante[]>([]);
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form State matching schema
   const [nome, setNome] = useState('');
@@ -52,20 +55,23 @@ export default function EstudantesPage() {
        return;
     }
     setLoading(true);
-    const { error } = await supabase.from('estudantes').insert([
-      { 
-        nome, 
-        bi, 
-        data_nascimento: dataNascimento,
-        email,
-        telefone,
-        curso_id: cursoId, 
-        ano_ingresso: parseInt(ano) 
-      }
-    ]);
+    let error;
+    if (editingId) {
+      const { error: updateError } = await supabase.from('estudantes').update({
+        nome, bi, data_nascimento: dataNascimento, email, telefone, curso_id: cursoId, ano_ingresso: parseInt(ano)
+      }).eq('id', editingId);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase.from('estudantes').insert([
+        { nome, bi, data_nascimento: dataNascimento, email, telefone, curso_id: cursoId, ano_ingresso: parseInt(ano) }
+      ]);
+      error = insertError;
+    }
+
     if (!error) {
-      alert('Estudante adicionado com sucesso!');
+      alert(`Estudante ${editingId ? 'atualizado' : 'adicionado'} com sucesso!`);
       setNome(''); setBi(''); setDataNascimento(''); setEmail(''); setTelefone(''); setCursoId(''); setAno('');
+      setEditingId(null);
       const [resEstudantes, resCursos] = await Promise.all([
         supabase.from('estudantes').select('*, cursos(nome)'),
         supabase.from('cursos').select('*')
@@ -75,8 +81,34 @@ export default function EstudantesPage() {
       setLoading(false);
     } else {
       console.error(error);
-      alert('Erro ao adicionar estudante: ' + error.message);
+      alert('Erro ao guardar estudante: ' + error.message);
+      setLoading(false);
     }
+  };
+
+  const handleEdit = (est: Estudante) => {
+    setEditingId(est.id);
+    setNome(est.nome);
+    setBi(est.bi);
+    setEmail(est.email);
+    setTelefone(est.telefone || '');
+    setAno(est.ano_ingresso.toString());
+    setCursoId(est.curso_id || '');
+    setDataNascimento(est.data_nascimento || '');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Tem a certeza que deseja excluir este estudante?')) return;
+    setLoading(true);
+    const { error } = await supabase.from('estudantes').delete().eq('id', id);
+    if (!error) {
+      const { data } = await supabase.from('estudantes').select('*, cursos(nome)');
+      if (data) setEstudantes(data as Estudante[]);
+    } else {
+      alert('Erro ao excluir: ' + error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -102,7 +134,7 @@ export default function EstudantesPage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <h3 className="font-headline text-[20px] font-semibold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary">person_add</span>
-          Adição Rápida
+          {editingId ? 'Editar Estudante' : 'Adição Rápida'}
         </h3>
         <div className="flex gap-4 flex-wrap items-end relative z-10">
           <div className="flex-1 min-w-[200px] space-y-1.5">
@@ -136,7 +168,14 @@ export default function EstudantesPage() {
             <label className="font-label text-[13px] font-semibold text-on-surface-variant">Ano</label>
             <input value={ano} onChange={e => setAno(e.target.value)} placeholder="2023" className="w-full border border-outline-variant/40 focus:border-primary px-4 py-2.5 rounded-xl bg-surface-container-lowest focus:ring-4 focus:ring-primary/10 transition-all focus:outline-none" type="number" required />
           </div>
-          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">Gravar</button>
+          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">
+            {editingId ? 'Atualizar' : 'Gravar'}
+          </button>
+          {editingId && (
+            <button type="button" onClick={() => { setEditingId(null); setNome(''); setBi(''); setDataNascimento(''); setEmail(''); setTelefone(''); setCursoId(''); setAno(''); }} className="bg-surface-container-lowest text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container hover:text-on-surface px-4 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm h-[46px]">
+              Cancelar
+            </button>
+          )}
         </div>
       </form>
 
@@ -179,10 +218,10 @@ export default function EstudantesPage() {
                   <td className="py-4 px-6 text-on-surface-variant font-medium">{est.ano_ingresso}</td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                      <button className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
+                      <button onClick={(e) => { e.stopPropagation(); handleEdit(est); }} className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
                         <span className="material-symbols-outlined text-[20px]">edit</span>
                       </button>
-                      <button className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
+                      <button onClick={(e) => { e.stopPropagation(); handleDelete(est.id); }} className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
                         <span className="material-symbols-outlined text-[20px]">delete</span>
                       </button>
                     </div>

@@ -14,6 +14,7 @@ export default function DocentesPage() {
   const supabase = createClient();
   const [docentes, setDocentes] = useState<Docente[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Form State
   const [nome, setNome] = useState('');
@@ -33,25 +34,54 @@ export default function DocentesPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.from('docentes').insert([
-      { 
-        nome, 
-        bi, 
-        especialidade,
-        email
-      }
-    ]);
+    
+    let error;
+    if (editingId) {
+      const { error: updateError } = await supabase.from('docentes').update({ 
+        nome, bi, especialidade, email
+      }).eq('id', editingId);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase.from('docentes').insert([
+        { nome, bi, especialidade, email }
+      ]);
+      error = insertError;
+    }
     
     if (!error) {
-      alert('Docente adicionado com sucesso!');
+      alert(`Docente ${editingId ? 'atualizado' : 'adicionado'} com sucesso!`);
       setNome(''); setBi(''); setEspecialidade(''); setEmail('');
+      setEditingId(null);
       const { data } = await supabase.from('docentes').select('*').order('nome', { ascending: true });
       if (data) setDocentes(data as Docente[]);
       setLoading(false);
     } else {
       console.error(error);
-      alert('Erro ao adicionar docente: ' + error.message);
+      alert('Erro ao guardar docente: ' + error.message);
+      setLoading(false);
     }
+  };
+
+  const handleEdit = (docente: Docente) => {
+    setEditingId(docente.id);
+    setNome(docente.nome);
+    setBi(docente.bi);
+    setEspecialidade(docente.especialidade);
+    setEmail(docente.email);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Tem a certeza que deseja excluir este docente?')) return;
+    setLoading(true);
+    const { error } = await supabase.from('docentes').delete().eq('id', id);
+    if (!error) {
+      const { data } = await supabase.from('docentes').select('*').order('nome', { ascending: true });
+      if (data) setDocentes(data as Docente[]);
+    } else {
+      alert('Erro ao excluir: ' + error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -77,7 +107,7 @@ export default function DocentesPage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <h3 className="font-headline text-[20px] font-semibold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary">badge</span>
-          Adição Rápida
+          {editingId ? 'Editar Docente' : 'Adição Rápida'}
         </h3>
         <div className="flex gap-4 flex-wrap items-end relative z-10">
           <div className="flex-1 min-w-[200px] space-y-1.5">
@@ -96,7 +126,14 @@ export default function DocentesPage() {
             <label className="font-label text-[13px] font-semibold text-on-surface-variant">Email Profissional</label>
             <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="carlos.mendes@ispne.ao" className="w-full border border-outline-variant/40 focus:border-primary px-4 py-2.5 rounded-xl bg-surface-container-lowest focus:ring-4 focus:ring-primary/10 transition-all focus:outline-none" required />
           </div>
-          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">Gravar</button>
+          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">
+            {editingId ? 'Atualizar' : 'Gravar'}
+          </button>
+          {editingId && (
+            <button type="button" onClick={() => { setEditingId(null); setNome(''); setBi(''); setEspecialidade(''); setEmail(''); }} className="bg-surface-container-lowest text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container hover:text-on-surface px-4 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm h-[46px]">
+              Cancelar
+            </button>
+          )}
         </div>
       </form>
 
@@ -135,10 +172,10 @@ export default function DocentesPage() {
                   </td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                      <button className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
+                      <button onClick={(e) => { e.stopPropagation(); handleEdit(docente); }} className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
                         <span className="material-symbols-outlined text-[20px]">edit</span>
                       </button>
-                      <button className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
+                      <button onClick={(e) => { e.stopPropagation(); handleDelete(docente.id); }} className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
                         <span className="material-symbols-outlined text-[20px]">delete</span>
                       </button>
                     </div>

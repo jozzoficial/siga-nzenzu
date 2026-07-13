@@ -13,6 +13,7 @@ export default function CursosPage() {
   const supabase = createClient();
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [loading, setLoading] = useState(true);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   // Campos do formulário de acordo com schema.sql
   const [nome, setNome] = useState('');
@@ -31,24 +32,53 @@ export default function CursosPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.from('cursos').insert([
-      { 
-        nome, 
-        duracao_anos: parseInt(duracaoAnos), 
-        departamento 
-      }
-    ]);
+    
+    let error;
+    if (editingId) {
+      const { error: updateError } = await supabase.from('cursos').update({ 
+        nome, duracao_anos: parseInt(duracaoAnos), departamento 
+      }).eq('id', editingId);
+      error = updateError;
+    } else {
+      const { error: insertError } = await supabase.from('cursos').insert([
+        { nome, duracao_anos: parseInt(duracaoAnos), departamento }
+      ]);
+      error = insertError;
+    }
     
     if (!error) {
-      alert('Curso adicionado com sucesso!');
+      alert(`Curso ${editingId ? 'atualizado' : 'adicionado'} com sucesso!`);
       setNome(''); setDuracaoAnos(''); setDepartamento('');
+      setEditingId(null);
       const { data } = await supabase.from('cursos').select('*').order('nome', { ascending: true });
       if (data) setCursos(data as Curso[]);
       setLoading(false);
     } else {
       console.error(error);
-      alert('Erro ao adicionar curso: ' + error.message);
+      alert('Erro ao guardar curso: ' + error.message);
+      setLoading(false);
     }
+  };
+
+  const handleEdit = (curso: Curso) => {
+    setEditingId(curso.id);
+    setNome(curso.nome);
+    setDepartamento(curso.departamento);
+    setDuracaoAnos(curso.duracao_anos.toString());
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!window.confirm('Tem a certeza que deseja excluir este curso?')) return;
+    setLoading(true);
+    const { error } = await supabase.from('cursos').delete().eq('id', id);
+    if (!error) {
+      const { data } = await supabase.from('cursos').select('*').order('nome', { ascending: true });
+      if (data) setCursos(data as Curso[]);
+    } else {
+      alert('Erro ao excluir: ' + error.message);
+    }
+    setLoading(false);
   };
 
   return (
@@ -75,7 +105,7 @@ export default function CursosPage() {
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2 pointer-events-none"></div>
         <h3 className="font-headline text-[20px] font-semibold text-on-surface flex items-center gap-2">
           <span className="material-symbols-outlined text-primary">menu_book</span>
-          Adicionar Curso
+          {editingId ? 'Editar Curso' : 'Adicionar Curso'}
         </h3>
         <div className="flex gap-4 flex-wrap items-end relative z-10">
           <div className="flex-1 min-w-[250px] space-y-1.5">
@@ -90,7 +120,14 @@ export default function CursosPage() {
             <label className="font-label text-[13px] font-semibold text-on-surface-variant">Duração (Anos)</label>
             <input value={duracaoAnos} onChange={e => setDuracaoAnos(e.target.value)} placeholder="4" min="1" max="6" className="w-full border border-outline-variant/40 focus:border-primary px-4 py-2.5 rounded-xl bg-surface-container-lowest focus:ring-4 focus:ring-primary/10 transition-all focus:outline-none" type="number" required />
           </div>
-          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">Gravar</button>
+          <button type="submit" className="bg-surface-container-high text-on-surface hover:bg-primary hover:text-white px-6 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm hover:shadow-md h-[46px]">
+            {editingId ? 'Atualizar' : 'Gravar'}
+          </button>
+          {editingId && (
+            <button type="button" onClick={() => { setEditingId(null); setNome(''); setDepartamento(''); setDuracaoAnos(''); }} className="bg-surface-container-lowest text-on-surface-variant border border-outline-variant/40 hover:bg-surface-container hover:text-on-surface px-4 py-2.5 rounded-xl font-label text-[15px] font-semibold transition-all shadow-sm h-[46px]">
+              Cancelar
+            </button>
+          )}
         </div>
       </form>
 
@@ -129,10 +166,10 @@ export default function CursosPage() {
                   </td>
                   <td className="py-4 px-6 text-right">
                     <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-2 group-hover:translate-x-0">
-                      <button className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
+                      <button onClick={(e) => { e.stopPropagation(); handleEdit(curso); }} className="p-2 text-on-surface-variant hover:text-primary rounded-lg hover:bg-primary/10 transition-colors tooltip" title="Editar">
                         <span className="material-symbols-outlined text-[20px]">edit</span>
                       </button>
-                      <button className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
+                      <button onClick={(e) => { e.stopPropagation(); handleDelete(curso.id); }} className="p-2 text-on-surface-variant hover:text-error rounded-lg hover:bg-error/10 transition-colors tooltip" title="Remover">
                         <span className="material-symbols-outlined text-[20px]">delete</span>
                       </button>
                     </div>
