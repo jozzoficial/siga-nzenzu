@@ -1,10 +1,15 @@
+'use client';
+
+import { useSidebar } from './SidebarProvider';
+
 export default function Header({ userProfile }: { userProfile: { nome?: string, papel?: string } | null }) {
+  const { toggle } = useSidebar();
   const getInitials = (name: string) => name ? name.substring(0, 2).toUpperCase() : 'U';
 
   return (
     <header className="sticky top-0 right-0 z-40 w-full bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm flex items-center justify-between px-6 lg:px-10 py-4 transition-all duration-300">
       <div className="flex items-center gap-4">
-        <button className="md:hidden text-primary p-2 hover:bg-primary/10 rounded-xl transition-colors">
+        <button onClick={toggle} className="md:hidden text-primary p-2 hover:bg-primary/10 rounded-xl transition-colors">
           <span className="material-symbols-outlined">menu</span>
         </button>
         <h1 className="hidden md:block font-headline text-[22px] text-primary font-bold tracking-tight">SIGA Dashboard</h1>

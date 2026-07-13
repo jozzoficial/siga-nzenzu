@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { createClient } from "@/utils/supabase/server";
+import { SidebarProvider } from "@/components/SidebarProvider";
 
 export default async function DashboardLayout({
   children,
@@ -17,8 +18,9 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex w-full min-h-screen bg-[#f8fafc]">
-      {/* Optional mesh/noise overlay could go here */}
+    <SidebarProvider>
+      <div className="flex w-full min-h-screen bg-[#f8fafc]">
+        {/* Optional mesh/noise overlay could go here */}
       <Sidebar userProfile={userProfile} />
       <div className="flex-1 flex flex-col min-w-0 md:ml-[280px]">
         <Header userProfile={userProfile} />
@@ -29,6 +31,7 @@ export default async function DashboardLayout({
           </div>
         </main>
       </div>
-    </div>
+      </div>
+    </SidebarProvider>
   );
 }

@@ -2,11 +2,14 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { createClient } from '@/utils/supabase/client';
+import { useSidebar } from './SidebarProvider';
 
 export default function Sidebar({ userProfile }: { userProfile?: { nome?: string, papel?: string } | null }) {
   const pathname = usePathname();
   const router = useRouter();
   const supabase = createClient();
+  const { isOpen, setIsOpen } = useSidebar();
+  const closeSidebar = () => setIsOpen(false);
 
   const links = [
     { href: '/dashboard', icon: 'dashboard', label: 'Dashboard' },
@@ -25,7 +28,15 @@ export default function Sidebar({ userProfile }: { userProfile?: { nome?: string
   };
 
   return (
-    <aside className="fixed left-0 top-0 h-full w-[280px] bg-primary/95 backdrop-blur-xl border-r border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.05)] flex flex-col p-6 z-50 hidden md:flex transition-all duration-300">
+    <>
+      {/* Backdrop for mobile */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/40 z-40 md:hidden backdrop-blur-sm transition-opacity" 
+          onClick={closeSidebar}
+        />
+      )}
+      <aside className={`fixed left-0 top-0 h-full w-[280px] bg-primary/95 backdrop-blur-xl border-r border-white/10 shadow-[4px_0_24px_rgba(0,0,0,0.05)] flex flex-col p-6 z-50 transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
       <div className="flex items-center gap-3 px-2 py-4 mb-6 border-b border-white/10">
         <div className="rounded-xl bg-white/10 backdrop-blur-sm p-1 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
           <img alt="ISPNE Logo" className="h-12 w-auto object-cover rounded-lg" src="/img/logo.png" />
@@ -41,6 +52,7 @@ export default function Sidebar({ userProfile }: { userProfile?: { nome?: string
           const isActive = pathname === link.href;
           return (
             <Link
+              onClick={closeSidebar}
               key={link.href}
               href={link.href}
               className={`font-label text-[14px] px-4 py-3 flex items-center gap-4 transition-all duration-300 rounded-xl group relative overflow-hidden ${
@@ -71,5 +83,6 @@ export default function Sidebar({ userProfile }: { userProfile?: { nome?: string
         </button>
       </div>
     </aside>
+    </>
   );
 }
