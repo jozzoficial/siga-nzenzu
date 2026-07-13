@@ -1,26 +1,38 @@
-export default function Header() {
+export default function Header({ userProfile }: { userProfile: { nome?: string, papel?: string } | null }) {
+  const getInitials = (name: string) => name ? name.substring(0, 2).toUpperCase() : 'U';
+
   return (
-    <header className="sticky top-0 right-0 z-40 w-full bg-surface border-b border-outline-variant shadow-sm flex items-center justify-between px-lg py-xs transition-all duration-300">
-      <div className="flex items-center gap-sm">
-        <button className="md:hidden text-primary p-2 hover:bg-surface-container-high rounded-full transition-colors">
+    <header className="sticky top-0 right-0 z-40 w-full bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm flex items-center justify-between px-6 lg:px-10 py-4 transition-all duration-300">
+      <div className="flex items-center gap-4">
+        <button className="md:hidden text-primary p-2 hover:bg-primary/10 rounded-xl transition-colors">
           <span className="material-symbols-outlined">menu</span>
         </button>
-        <h1 className="hidden md:block font-headline text-[20px] text-primary font-bold">ISPNE - Uíge</h1>
+        <h1 className="hidden md:block font-headline text-[22px] text-primary font-bold tracking-tight">SIGA Dashboard</h1>
       </div>
-      <div className="flex-1 max-w-md mx-sm hidden sm:block relative">
-        <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
-        <input className="w-full pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full font-body text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-shadow" placeholder="Search..." type="text" />
+      
+      <div className="flex-1 max-w-lg mx-8 hidden sm:block relative group">
+        <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant/70 text-[22px] group-focus-within:text-primary transition-colors">search</span>
+        <input className="w-full pl-12 pr-4 py-2.5 bg-surface-container-lowest hover:bg-surface-bright border border-outline-variant/40 focus:border-primary/50 rounded-2xl font-body text-[14px] text-on-surface focus:outline-none focus:ring-4 focus:ring-primary/10 shadow-sm transition-all duration-300 placeholder:text-on-surface-variant/50" placeholder="Pesquisar estudantes, cursos..." type="text" />
       </div>
-      <div className="flex items-center gap-sm">
-        <button className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors relative">
-          <span className="material-symbols-outlined">notifications</span>
-          <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface"></span>
+
+      <div className="flex items-center gap-3">
+        <button className="text-on-surface-variant hover:text-primary hover:bg-primary/10 p-2.5 rounded-xl transition-all duration-300 relative group">
+          <span className="material-symbols-outlined group-hover:scale-110 transition-transform">notifications</span>
+          <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-error rounded-full border-2 border-surface animate-pulse"></span>
         </button>
-        <button className="text-on-surface-variant hover:bg-surface-container-high p-2 rounded-full transition-colors">
-          <span className="material-symbols-outlined">settings</span>
-        </button>
-        <div className="w-9 h-9 rounded-full overflow-hidden border border-outline-variant ml-xs cursor-pointer hover:ring-2 ring-primary/30 transition-all bg-secondary-container">
-            <span className="material-symbols-outlined w-full h-full flex items-center justify-center text-on-secondary-container">person</span>
+        
+        <div className="flex items-center gap-3 ml-2 pl-5 border-l border-outline-variant/30">
+          <div className="hidden sm:flex flex-col text-right">
+            <span className="font-label text-[14px] font-bold text-on-surface leading-tight">
+              {userProfile?.nome || 'Utilizador'}
+            </span>
+            <span className="font-body text-[12px] font-medium text-on-surface-variant capitalize">
+              {userProfile?.papel || 'Visitante'}
+            </span>
+          </div>
+          <div className="w-10 h-10 rounded-xl overflow-hidden border border-outline-variant/30 cursor-pointer hover:ring-4 ring-primary/20 hover:scale-105 transition-all duration-300 bg-gradient-to-br from-secondary-container to-primary-container flex items-center justify-center font-bold text-on-secondary-container text-sm shadow-md">
+            {userProfile?.nome ? getInitials(userProfile.nome) : <span className="material-symbols-outlined text-white">person</span>}
+          </div>
         </div>
       </div>
     </header>
