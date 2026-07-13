@@ -26,9 +26,10 @@ export default function LoginPage() {
       if (error) throw error;
       
       router.push('/dashboard');
-    } catch (error: any) {
-      console.error('Error logging in:', error.message);
-      setErrorMsg(error.message || 'Falha ao iniciar sessão. Verifique as credenciais.');
+    } catch (error) {
+      const err = error as Error;
+      console.error('Error logging in:', err.message);
+      setErrorMsg(err.message || 'Falha ao iniciar sessão. Verifique as credenciais.');
     } finally {
       setLoading(false);
     }
